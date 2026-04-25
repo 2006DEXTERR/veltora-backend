@@ -16,7 +16,19 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
   ssl: { rejectUnauthorized: false }
 });
-
+// Create table if it doesn't exist
+pool.query(`
+  CREATE TABLE IF NOT EXISTS enquiries (
+    id BIGSERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    city VARCHAR(100),
+    interested_in VARCHAR(255),
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).catch(err => console.log('Table might already exist:', err.message));
 // Test database connection
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
