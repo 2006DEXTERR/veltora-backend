@@ -29,6 +29,100 @@ pool.query(`
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
 `).catch(err => console.log('Table might already exist:', err.message));
+// Create users table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS users (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255),
+    phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).catch(err => console.log('Users table:', err.message));
+
+// Create projects table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS projects (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    city VARCHAR(100),
+    price VARCHAR(100),
+    description TEXT,
+    image_url VARCHAR(500),
+    status VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).catch(err => console.log('Projects table:', err.message));
+
+// Create bookings table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS bookings (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id),
+    project_id BIGINT REFERENCES projects(id),
+    booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    amount VARCHAR(100),
+    status VARCHAR(50)
+  )
+`).catch(err => console.log('Bookings table:', err.message));
+
+// Create payments table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS payments (
+    id BIGSERIAL PRIMARY KEY,
+    enquiry_id BIGINT REFERENCES enquiries(id),
+    amount DECIMAL(10,2),
+    razorpay_order_id VARCHAR(100),
+    status VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).catch(err => console.log('Payments table:', err.message));
+
+// Create reviews table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS reviews (
+    id BIGSERIAL PRIMARY KEY,
+    project_id BIGINT REFERENCES projects(id),
+    user_id BIGINT REFERENCES users(id),
+    rating INT,
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).catch(err => console.log('Reviews table:', err.message));
+
+// Create admin_users table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS admin_users (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).catch(err => console.log('Admin users table:', err.message));
+
+// Create messages table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS messages (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id),
+    subject VARCHAR(255),
+    message TEXT,
+    status VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).catch(err => console.log('Messages table:', err.message));
+
+// Create wishlist table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS wishlist (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id),
+    project_id BIGINT REFERENCES projects(id),
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).catch(err => console.log('Wishlist table:', err.message));
 // Test database connection
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
